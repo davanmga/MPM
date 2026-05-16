@@ -1,0 +1,102 @@
+python train_qwen.py --attn_implementation sdpa \
+--dataset_use my_dataset \
+--per_device_train_batch_size 1 \
+--gradient_checkpointing True \
+--bf16 True
+
+
+
+
+2025.11.27____Tyh启动代码
+accelerate launch --num_processes 4 \
+    /home/a/work/Qwen3-VL-main/qwen-vl-finetune/qwenvl/train/train_qwen.py \
+    --model_name_or_path /home/a/work/Qwen3-VL-8B-Instruct \
+    --dataset_use /home/a/work/outdataset/train.json \
+    --output_dir /home/a/work/output-qwen3vl \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 16 \
+    --learning_rate 2e-5 \
+    --num_train_epochs 1 \
+    --bf16 True \
+    --gradient_checkpointing True \
+    --logging_steps 10 \
+    --save_steps 1000 \
+    --save_total_limit 3
+
+
+
+
+
+🚀 训练 LoRA 版 Qwen3-VL 命令（多卡 / 单卡都可）
+单卡（推荐测试）
+CUDA_VISIBLE_DEVICES=0 accelerate launch train_qwen.py \
+    --model_name_or_path /home/a/work/Qwen3-VL-8B-Instruct \
+    --dataset_use my_dataset \
+    --output_dir output-qwen3vl-lora \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 32 \
+    --learning_rate 2e-5 \
+    --num_train_epochs 1 \
+    --lora_enable True \
+    --bf16 True \
+    --gradient_checkpointing True
+
+多卡（4x4090 可轻松训练）
+accelerate launch --num_processes 4 train_qwen.py \
+    --model_name_or_path /home/a/work/Qwen3-VL-8B-Instruct \
+    --dataset_use my_dataset \
+    --output_dir output-lora-1-12.01 \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 32 \
+    --learning_rate 1e-4 \
+    --num_train_epochs 3 \
+    --lora_enable True \
+    --bf16 True \
+    --gradient_checkpointing False
+
+
+
+12.01
+accelerate launch --num_processes 1 train_qwen.py \
+    --model_name_or_path /home/a/work/Qwen3-VL-8B-Instruct \
+    --dataset_use my_dataset \
+    --output_dir output-lora-singlegpu \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 32 \
+    --learning_rate 1e-4 \
+    --num_train_epochs 3 \
+    --lora_enable True \
+    --bf16 True \
+    --gradient_checkpointing False
+
+
+
+
+单卡多次训练
+accelerate launch --num_processes 1 train_qwen.py \
+    --model_name_or_path /home/a/work/Qwen3-VL-8B-Instruct \
+    --dataset_use my_dataset \
+    --output_dir output-lora-singlegpu \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 32 \
+    --learning_rate 5e-5 \
+    --num_train_epochs 30 \
+    --lora_enable True \
+    --bf16 True \
+    --gradient_checkpointing False
+
+
+
+
+测试用的,千万不要用
+accelerate launch --num_processes 1 train_qwen.py \
+    --model_name_or_path /home/a/work/Qwen3-VL-8B-Instruct \
+    --dataset_use my_dataset \
+    --output_dir output-lora-test \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 32 \
+    --learning_rate 5e-5 \
+    --num_train_epochs 1 \
+    --lora_enable True \
+    --bf16 True \
+    --gradient_checkpointing False
